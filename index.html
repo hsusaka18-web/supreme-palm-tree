@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <style>
+        :root {
+            /* နောက်ခံကို နွေးထွေးလှပတဲ့ ပန်းနုရောင် ပြောင်းထားပါသည် */
+            --bg-color: #ffe4e6; 
+            /* စာအိတ်ကို ပန်းရောင်ဖျော့လေး ဖြစ်အောင် ပြင်ထားပါသည် */
+            --envelope-color: #fbcfe8;
+            --envelope-dark: #f472b6;
+            --card-bg: #fff1f2;
+            --text-color: #be185d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', cursive, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* --- STAGE 1: ENVELOPE & CARDS --- */
+        .envelope-wrapper {
+            position: relative;
+            width: 280px;
+            height: 180px;
+            background-color: var(--envelope-dark);
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            box-shadow: 0 12px 25px rgba(244, 114, 182, 0.25);
+            cursor: pointer;
+            margin-top: 100px;
+            transition: transform 0.3s;
+            overflow: hidden;
+        }
+
+        .envelope-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 140px solid transparent;
+            border-right: 140px solid transparent;
+            border-top: 100px solid var(--envelope-color);
+            transform-origin: top;
+            transition: transform 0.5s ease;
+            z-index: 3;
+        }
+
+        .envelope-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border-left: 140px solid #f472b6;
+            border-right: 140px solid #f472b6;
+            border-bottom: 90px solid #ec4899;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* Heart Seal in Center */
+        .heart-seal {
+            position: absolute;
+            top: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 36px;
+            background-color: #db2777;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 4;
+            transition: opacity 0.4s ease;
+        }
+
+        .envelope-wrapper.open {
+            overflow: visible;
+        }
+
+        .envelope-wrapper.open::before {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .envelope-wrapper.open .heart-seal {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Birthday Card */
+        .card {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            width: 250px;
+            height: 150px;
+            background-color: var(--envelope-dark);
+            border-radius: 8px;
+            box-shadow: none;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.6s ease, background-color 0.6s ease;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed transparent;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            color: var(--envelope-dark);
+            margin-bottom: 5px;
+            transition: color 0.6s ease;
+        }
+
+        .card p, .card span {
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .envelope-wrapper.open .card {
+            transform: translateY(-120px);
+            background-color: var(--card-bg);
+            border: 2px dashed #f472b6;
+            z-index: 2;
+        }
+
+        .envelope-wrapper.open .card h2 {
+            color: var(--text-color);
+        }
+
+        .envelope-wrapper.open .card p {
+            color: #555;
+            opacity: 1;
+        }
+
+        .envelope-wrapper.open .card span {
+            opacity: 1;
+        }
+
+        /* Photos Floating Out */
+        .photos-container {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            width: 300px;
+            height: 300px;
+            transition: all 0.5s ease;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .photos-container.show {
+            transform: translateX(-50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .polaroid {
+            position: absolute;
+            background: white;
+            padding: 8px 8px 20px 8px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            width: 140px;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        .polaroid-1 {
+            top: 10px;
+            left: 10px;
+            transform: rotate(-8deg);
+        }
+
+        .polaroid-2 {
+            top: 50px;
+            right: 10px;
+            transform: rotate(10deg);
+        }
+
+        .polaroid:hover {
+            transform: scale(1.1) rotate(0deg);
+            z-index: 10;
+        }
+
+        /* Instruction Below Envelope */
+        .instruction-hint {
+            color: #be185d;
+            font-size: 16px;
+            margin-top: 35px;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { opacity: 0.7; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* --- NEXT BUTTON --- */
+        .next-btn {
+            margin-top: 25px;
+            padding: 12px 30px;
+            background-color: #fff;
+            color: var(--text-color);
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .next-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .next-btn:hover {
+            background-color: #fbcfe8;
+            transform: translateY(-2px);
+        }
+
+        /* --- STAGE 2: REALISTIC CAKE PAGE --- */
+        .cake-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .cake-section.active {
+            display: flex;
+        }
+
+        .real-cake {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin-top: 20px;
+        }
+
+        .plate {
+            width: 240px;
+            height: 15px;
+            background: #ffffff;
+            border-radius: 10px;
+            position: absolute;
+            bottom: 0;
+            left: -10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            animation: dropLayer 0.6s ease forwards;
+        }
+
+        .layer-bottom {
+            width: 200px;
+            height: 60px;
+            background: linear-gradient(to right, #f472b6, #db2777);
+            border-radius: 10px 10px 0 0;
+            position: absolute;
+            bottom: 15px;
+            left: 10px;
+            box-shadow: inset 0 -10px 0 #be185d;
+            opacity: 0;
+            animation: dropLayer 0.6s ease 0.4s forwards;
+        }
+
+        .layer-middle {
+            width: 160px;
+            height: 55px;
+            background: linear-gradient(to right, #fdf2f8, #fbcfe8);
+            border-radius: 10px 10px 0 0;
+            position: absolute;
+            bottom: 75px;
+            left: 30px;
+            box-shadow: inset 0 -8px 0 #f472b6;
+            opacity: 0;
+            animation: dropLayer 0.6s ease 0.8s forwards;
+        }
+
+        .layer-top {
+            width: 120px;
+            height: 50px;
+            background: linear-gradient(to right, #f472b6, #be185d);
+            border-radius: 10px 10px 0 0;
+            position: absolute;
+            bottom: 130px;
+            left: 50px;
+            opacity: 0;
+            animation: dropLayer 0.6s ease 1.2s forwards;
+        }
+
+        .icing {
+            width: 100%;
+            height: 15px;
+            background: #fff;
+            border-radius: 10px;
+            position: absolute;
+            top: 0;
+        }
+
+        .candle {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 30px;
+            background: repeating-linear-gradient(45deg, #fff, #fff 5px, #f472b6 5px, #f472b6 10px);
+            border-radius: 3px;
+            cursor: pointer;
+            opacity: 0;
+            z-index: 10;
+            animation: dropLayer 0.6s ease 1.6s forwards;
+        }
+
+        .flame {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 18px;
+            background: #f43f5e;
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 12px #fda4af;
+            animation: flicker 0.6s infinite alternate;
+            transition: opacity 0.3s;
+        }
+
+        .flame.off {
+            opacity: 0;
+            animation: none;
+        }
+
+        @keyframes dropLayer {
+            0% { transform: translateY(-200px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes flicker {
+            from { transform: translateX(-50%) scale(1); }
+            to { transform: translateX(-50%) scale(1.15); }
+        }
+
+        .instruction-text {
+            color: #be185d;
+            margin-top: 30px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        /* --- STAGE 3: WISH & PHOTOS PAGE --- */
+        .wish-section {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .wish-section.active {
+            display: flex;
+        }
+
+        .wish-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .wish-card {
+            background: #fff;
+            flex: 1.2;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            text-align: left;
+            border: 2px solid #f472b6;
+            opacity: 0;
+            animation: slideLeftFade 0.8s ease forwards;
+            min-height: 180px;
+        }
+
+        .wish-card h3 {
+            color: #be185d;
+            margin-bottom: 12px;
+            font-size: 22px;
+        }
+
+        .wish-card p {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #9d174d;
+            /* iOS နှင့် Android တွင် မြန်မာစာအမှန်ပေါ်စေရန်နှင့် နောက်ပြန်မဖြစ်စေရန် direction ကို ltr သတ်မှတ်ပေးသည် */
+            direction: ltr;
+            text-align: left;
+            unicode-bidi: isolate;
+            white-space: pre-wrap;
+        }
+
+        /* Romantic Photos */
+        .final-photos {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            opacity: 0;
+            animation: slideRightFade 0.8s ease 0.3s forwards;
+        }
+
+        .final-photo-card {
+            background: white;
+            padding: 6px 6px 18px 6px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            width: 100%;
+            max-width: 180px;
+            transform: rotate(-2deg);
+        }
+
+        .final-photo-card:nth-child(2) {
+            transform: rotate(3deg);
+        }
+
+        .final-photo-card img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        @keyframes slideLeftFade {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideRightFade {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* --- STAGE 4: GIFT BOXES SECTION --- */
+        .gift-section {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .gift-section.active {
+            display: flex;
+        }
+
+        .gift-title {
+            color: #be185d;
+            font-size: 22px;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease;
+        }
+
+        .gift-boxes-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .gift-box {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, #f472b6, #db2777);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(219, 39, 119, 0.3);
+            position: relative;
+            transition: all 0.3s ease;
+            animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .gift-box:hover {
+            transform: translateY(-10px) scale(1.05);
+            animation: shake 0.5s infinite alternate;
+            box-shadow: 0 12px 25px rgba(244, 114, 182, 0.8);
+        }
+
+        @keyframes shake {
+            0% { transform: translateY(-10px) rotate(-3deg); }
+            100% { transform: translateY(-10px) rotate(3deg); }
+        }
+
+        @keyframes popUp {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Popup Modal for Gift Result */
+        .gift-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .gift-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 320px;
+            width: 85%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: zoomIn 0.4s ease;
+            position: relative;
+        }
+
+        .modal-content p {
+            font-size: 20px;
+            color: #be185d;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            padding: 10px 24px;
+            background-color: #db2777;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Mobile Layout Adjustment */
+        @media (max-width: 580px) {
+            .wish-container {
+                flex-direction: column;
+            }
+            .final-photos {
+                flex-direction: row;
+                width: 100%;
+            }
+            .final-photo-card {
+                width: 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <audio id="bgm" loop>
+        <source src="just.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+    window.addEventListener("click", () => {
+        const music = document.getElementById("bgm");
+        music.play();
+    }, { once: true });
+    </script>
+
+    <div class="container">
+
+        <!-- PAGE 1: Envelope Section -->
+        <div id="envelope-section" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+            
+            <div class="envelope-wrapper" id="envelope" onclick="handleEnvelopeClick()">
+                <div class="heart-seal">❤️</div>
+                
+                <!-- Happy Birthday Card -->
+                <div class="card" id="birthdayCard" onclick="handleCardClick(event)">
+                    <span>🎀</span>
+                    <h2>Happy Birthday,Ma ma!</h2>
+                    <p>💖🎂 </p>
+                </div>
+
+                <!-- Photos Floating Out -->
+                <div class="photos-container" id="photosContainer">
+                    <div class="polaroid polaroid-1" onclick="resetEnvelope(event)">
+                        <img src="her.jpg" alt="Romantic Memory 1">
+                    </div>
+                    <div class="polaroid polaroid-2" onclick="resetEnvelope(event)">
+                        <img src="her1.jpg" alt="Romantic Memory 2">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instruction Text Below Envelope -->
+            <p class="instruction-hint" id="envelopeHint">✉️ စာအိတ်ကို နှိပ်ပါ</p>
+
+            <!-- Next Button -->
+            <button class="next-btn" id="nextBtn1" onclick="goToCakeSection()">Next ➔</button>
+        </div>
+
+        <!-- PAGE 2: Realistic Cake Section -->
+        <div class="cake-section" id="cakeSection">
+            <div class="real-cake">
+                <div class="plate"></div>
+                <div class="layer-bottom"></div>
+                <div class="layer-middle"></div>
+                <div class="layer-top">
+                    <div class="icing"></div>
+                </div>
+                <div class="candle" onclick="blowCandle()">
+                    <div class="flame" id="flame"></div>
+                </div>
+            </div>
+            
+            <p class="instruction-text" id="instruction">🕯️ ဖယောင်းတိုင်လေးကို နှိပ်ပြီး မီးမှုတ်လိုက်ပါ...</p>
+            
+            <button class="next-btn" id="nextBtn2" onclick="goToWishSection()">ဆုတောင်းစာ ကြည့်ရန် ➔</button>
+        </div>
+
+        <!-- PAGE 3: Wish & Photos Page -->
+        <div class="wish-section" id="wishSection">
+            <div class="wish-container">
+                <!-- Left: Wish Letter -->
+                <div class="wish-card">
+                    <h3>Happy birthday Ma ma💖</h3>
+                    <p id="typingWish"></p>
+                </div>
+
+                <!-- Right: Romantic Photos -->
+                <div class="final-photos">
+                    <div class="final-photo-card">
+                        <img src="her.jpg" alt="Couple Romantic 1">
+                    </div>
+                    <div class="final-photo-card">
+                        <img src="her1.jpg" alt="Couple Romantic 2">
+                    </div>
+                </div>
+            </div>
+
+            <button class="next-btn" id="nextBtn3" onclick="goToGiftSection()">မွေးနေ့လက်ဆောင်ရွေးရန် 🎁 ➔</button>
+        </div>
+
+        <!-- PAGE 4: Gift Boxes Section -->
+        <div class="gift-section" id="giftSection">
+            <h2 class="gift-title">🎁 မွေးနေ့လက်ဆောင်တစ်ခု ရွေးလိုက်ပါ! ✨</h2>
+            
+            <div class="gift-boxes-container">
+                <div class="gift-box" onclick="openGift(1)">🎁</div>
+                <div class="gift-box" onclick="openGift(2)">🎁</div>
+                <div class="gift-box" onclick="openGift(3)">🎁</div>
+            </div>
+        </div>
+
+        <!-- Gift Result Modal -->
+        <div class="gift-modal" id="giftModal">
+            <div class="modal-content">
+                <p id="giftResultText"></p>
+                <button class="close-btn" onclick="closeModal()">ပိတ်မည်</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentState = 'closed';
+
+        const envelope = document.getElementById('envelope');
+        const photosContainer = document.getElementById('photosContainer');
+        const nextBtn1 = document.getElementById('nextBtn1');
+        const nextBtn2 = document.getElementById('nextBtn2');
+        const nextBtn3 = document.getElementById('nextBtn3');
+        const envelopeHint = document.getElementById('envelopeHint');
+
+        // ၁။ စာအိတ်ကို Click လုပ်လျှင် Card ထွက်လာမည်
+        function handleEnvelopeClick() {
+            if (currentState === 'closed') {
+                envelope.classList.add('open');
+                envelopeHint.innerText = "✨ Card လေးကို နှိပ်ပါ";
+                currentState = 'card';
+            }
+        }
+
+        // ၂။ Card ကို Click လုပ်လျှင် ပုံ ၂ ပုံ ပေါ်လာမည်
+        function handleCardClick(event) {
+            if (currentState === 'card') {
+                event.stopPropagation();
+                photosContainer.classList.add('show');
+                envelopeHint.innerText = "📸 ပုံကို ပြန်နှိပ်ပါ";
+                currentState = 'photos';
+            }
+        }
+
+        // ၃။ ပုံများကို Click လုပ်လျှင် စာအိတ်ထဲ ပြန်ဝင်ပြီး Next Button ပေါ်လာမည်
+        function resetEnvelope(event) {
+            event.stopPropagation();
+            photosContainer.classList.remove('show');
+            envelope.classList.remove('open');
+            envelopeHint.innerText = "🎉 အောက်က Next ကို နှိပ်ပါ";
+            nextBtn1.classList.add('visible');
+            currentState = 'completed';
+        }
+
+        // ၄။ Page 2: Cake Section သို့ သွားမည်
+        function goToCakeSection() {
+            document.getElementById('envelope-section').style.display = 'none';
+            document.getElementById('cakeSection').classList.add('active');
+        }
+
+        // ၅။ ဖယောင်းတိုင် မီးမှုတ်ခြင်း
+        function blowCandle() {
+            const flame = document.getElementById('flame');
+            const instruction = document.getElementById('instruction');
+
+            if (!flame.classList.contains('off')) {
+                flame.classList.add('off');
+                instruction.innerText = "";
+                
+                setTimeout(() => {
+                    nextBtn2.classList.add('visible');
+                }, 400);
+            }
+        }
+
+        // ၆။ Page 3: Wish & Photos Section သို့ သွားမည်
+        function goToWishSection() {
+            document.getElementById('cakeSection').classList.remove('active');
+            document.getElementById('wishSection').classList.add('active');
+            startTypingWish();
+        }
+
+        // Typing Effect Function for iOS & Android compatibility
+        const wishText = "Thank you for being my smile, my comfort, and my favorite person. Every day with you feels special, and I'm so lucky to have you.I hope your day is full of love, laughter, and all the things that make you happy. You deserve the whole world, and I'll always do my best to give you the little pieces of it I can. 🌍✨I love you so much. Enjoy your day, my beautiful girl! 🥰";
+
+        function startTypingWish() {
+            const typingContainer = document.getElementById('typingWish');
+            typingContainer.innerText = "";
+            let i = 0;
+            const speed = 40; // စာလုံးပေါ်သည့် အမြန်နှုန်း (လိုသလို ချိန်နိုင်ပါသည်)
+
+            function typeWriter() {
+                if (i < wishText.length) {
+                    typingContainer.innerText += wishText.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                } else {
+                    // စာရေးပြီးဆုံးမှ Next ခလုတ် ပေါ်လာမည်
+                    nextBtn3.classList.add('visible');
+                }
+            }
+
+            typeWriter();
+        }
+
+        // ၇။ Page 4: Gift Section သို့ သွားမည်
+        function goToGiftSection() {
+            document.getElementById('wishSection').classList.remove('active');
+            document.getElementById('giftSection').classList.add('active');
+        }
+
+        // Gift Box ဖွင့်လှစ်ခြင်း
+        function openGift(boxNumber) {
+            const modal = document.getElementById('giftModal');
+            const resultText = document.getElementById('giftResultText');
+
+            if (boxNumber === 1) {
+                resultText.innerText = "အရုပ်💖";
+            } else if (boxNumber === 2) {
+                resultText.innerText = "Unlimited kiss💕";
+            } else if (boxNumber === 3) {
+                resultText.innerText = "Warm hug🫂";
+            }
+
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('giftModal').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
